@@ -1,0 +1,2 @@
+prefferedName|TylerTheGoat
+loggedIn|false

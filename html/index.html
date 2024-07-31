@@ -1,0 +1,51 @@
+ <!DOCTYPE HTML>
+<html>
+  <head>
+    <title> Private Chat App (Coded By Tyler) </title>
+    <meta name = "charset" charset = "utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel = "stylesheet" type = "text/css" href = "style.css">
+    <link rel="manifest" href="manifest.json" id="manifestItem"/>
+    <script src= "socket.io/socket.io.js"></script>
+  </head>
+  <body>
+    <section class="action-alert-container" id="alertContainer"></section>
+    <section class='container' id="loadingContainer">
+      Loading...
+    </section>
+    <section id="mainContainer" class="container" style="display: none;">
+      <div class="top-nav-container">
+        <div class="topnav-btn" onclick="getOnlineUsers()" id="onlineUsersBtn">Online Users</div>
+        <div class="topnav-btn" onclick="window.location.reload()">Refresh Page</div>
+        <div class="topnav-btn" onclick="logout()">Logout</div>
+        <!--<div class="topnav-btn" onclick="checkConnection()" id="checkConnectionBtn">Check Connection</div>-->
+      </div>
+      <div class="messsage-container" id="messageContainer"></div>
+      <div class="bottom-container">
+        <div class="typing-container noTyping" id="typingContainer">
+          <span class="typing-text" id="typingText"></span>
+          <span class="typing-circle"></span>
+          <span class="typing-circle"></span>
+          <span class="typing-circle"></span>
+        </div>
+        <div class="message-input-container">
+          <input placeholder="Message" id="messageInput" class="message-input" name="messageInput" onchange="checkTyping(this.value)" oninput="checkTyping(this.value)" autocomplete="off" autocapitalize="false" enterkeyhint="send">
+          <div class="message-send-btn" id="sendBtn" onclick="Send()">Send</div>
+        </div>
+      </div>
+    </section>
+    <section id="loginContainer" class="container" style="display: none;">
+      <div class="login-container">
+        <div class="circle"></div>
+        <div class="login-form">
+          <h1>Login</h1>
+          <input type="text" id="usernameInput" placeholder="Username" class="login-item input" autocomplete="off" name="usernameInput">
+          <input type="password" id="passwordInput" placeholder="Password" class="login-item input" autocomplete="off" name="passwordInput">
+          <div class="submit-btn" id="loginBtn" onclick="attemptLogin()">Continue</div>
+        </div>
+        <div class="circle-bottom"></div>
+      </div>
+    </section>
+    <script src="script.js"></script>
+  </body>
+</html>

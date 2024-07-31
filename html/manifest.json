@@ -1,0 +1,24 @@
+{
+  "version": "1.0.0",
+  "lang": "en",
+  "name": "Private Chat App",
+  "short_name": "Chat App",
+  "description": "The Official Web App For SevenT33N's Chat App",
+  "icons": [
+    {
+      "src": "appLogo.png",
+      "sizes": "1000x1000",
+      "type": "image/png"
+    }
+  ],
+  "scope": "/",
+  "start_url": "https://147da755-9fb9-4890-9354-291c2dd7974b-00-1sf9l8uqxav4v.spock.replit.dev/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "theme_color": "#00083f",
+  "background_color": "#00083f",
+  "categories": ["entertainment", "games", "news", "business"],
+  "launch_handler": {
+    "client_mode": "auto"
+  }
+}
