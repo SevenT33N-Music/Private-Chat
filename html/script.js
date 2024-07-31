@@ -21,6 +21,8 @@ const loadingContainer = document.getElementById('loadingContainer');
 const mainContainer = document.getElementById('mainContainer');
 const loginContainer = document.getElementById('loginContainer');
 const messageContainer = document.getElementById('messageContainer');
+const sendBtn = document.getElementById('sendBtn');
+const timeElaspedLoading = document.getElementById('timeElaspedLoading');
 
 var typingPing = false;
 var userName;
@@ -137,7 +139,8 @@ function createMessage(sender, message) {
     messageItem.id = `message${messageNum}`;
     messageContainer.appendChild(messageItem);
     try {
-      document.getElementById(`message${messageNum - 1}`).scrollIntoView({ behavior: "smooth", block: "start", inline: "start" });
+      messageContainer.style.scrollBehavior = "smooth";
+      messageContainer.scrollTop = messageContainer.scrollHeight;
     }
     catch (err) {
       console.log(err);
@@ -162,7 +165,27 @@ function createMessage(sender, message) {
     senderProfileItem.classList.add('senderPFP');
     senderNameItem.innerHTML = sender;
     senderNameItem.classList.add('senderName');
-    msg.innerHTML = message;
+    senderNameItem.onclick = function() {
+      let originalValue = messageInput.value;
+      messageInput.value = `@${sender}: ${originalValue}`;
+    }
+    if (message.includes('@') == true && message.includes(':') == true) {
+      let messageSplit = message.split(':');
+      let messageSplit2 = messageSplit[0].split('@');
+      let replyTo = messageSplit2[1];
+      let replyMessage = messageSplit[1];
+      let messageBefore = messageSplit2[0];
+      messageBefore = messageBefore.trim();
+      if (messageBefore != "") {
+        msg.innerHTML = `<p>${messageBefore} <i class="reply-text">@${replyTo}</i> ${replyMessage}</p>`;
+      }
+      else {
+        msg.innerHTML = `<p><i class="reply-text">@${replyTo}</i>: ${replyMessage}</p>`;
+      }
+    }
+    else {
+      msg.innerHTML = message;
+    }
     msg.classList.add('messageTxt');
     senderItem.classList.add('senderInfo');
     senderProfileItem.appendChild(senderProfileImg);
@@ -173,7 +196,9 @@ function createMessage(sender, message) {
     messageItem.id = `message${messageNum}`;
     messageContainer.appendChild(messageItem);
     try {
-      document.getElementById(`message${messageNum - 1}`).scrollIntoView({ behavior: "smooth", block: "start", inline: "start" });
+      messageContainer.style.scrollBehavior = "smooth";
+      messageContainer.scrollTop = messageContainer.scrollHeight;
+      //document.getElementById(`message${messageNum - 1}`).scrollIntoView({ behavior: "smooth", block: "start", inline: "start" });
     }
     catch (err) {
       alert(`Couldnt Scroll into view. Error: ${err}`);
@@ -204,17 +229,17 @@ function onload() {
       }
     }
   })
-  socket.on('loginSuccess', function() {
+  socket.on('loginSuccess', function(username) {
     try {
       localStorage.setItem('loggedIn', 'true');
-      localStorage.setItem('username', userName);
+      localStorage.setItem('username', username);
     }
     catch (err) {
       alert(`Error: ${err}. Login status will not be saved.`);
     }
     loginContainer.style.display = "none";
     mainContainer.style.display = "flex";
-    socket.emit("join", 'room', userName);
+    socket.emit("join", 'room', username);
   })
   socket.on('loginFail', function() {
     alert('Incorrect username or password');
@@ -257,27 +282,45 @@ function onload() {
       }
     }
     attemptReconnect();
-  });
-  loadingContainer.style.display = "none";
-  let loggedIn = localStorage.getItem('loggedIn');
-  if (loggedIn == true || loggedIn == 'true') {
-    try {
-      console.log('logged in');
-      userName = localStorage.getItem('username');
-      socket.emit("join", 'room', userName);
-      mainContainer.style.display = "flex";
-      mainContainer.style.opacity = "1";
-    }
-    catch (err) {
-      if (debugMode == true) {
-        createActionMessage('error', `Error: ${err}. Login status will not be saved.`);
+  })
+  socket.on('userExists', function() {
+    sendBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i>';
+    sendValidUserReply();
+  })
+  socket.on('userDoesntExist', function() {
+    sendBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i>';
+    alert('sorry, that username does not exist. Check spelling and make sure the user actually exists :D');
+  })
+  socket.on('serverUp', function() {
+    clearInterval(timeElaspedInterval);
+    loadingContainer.style.display = "none";
+    let loggedIn = localStorage.getItem('loggedIn');
+    if (loggedIn == true || loggedIn == 'true') {
+      try {
+        console.log('logged in');
+        userName = localStorage.getItem('username');
+        socket.emit("join", 'room', userName);
+        mainContainer.style.display = "flex";
+        mainContainer.style.opacity = "1";
+      }
+      catch (err) {
+        if (debugMode == true) {
+          createActionMessage('error', `Error: ${err}. Login status will not be saved.`);
+        }
       }
     }
-  }
-  else {
-    console.log('not logged in');
-    loginContainer.style.display = 'flex';
-  }
+    else {
+      console.log('not logged in');
+      loginContainer.style.display = 'flex';
+    }
+  })
+  loadingInfo.innerHTML = "Waiting for Server... (This could take a minute)";
+  let timeElapsed = 0;
+  let timeElaspedInterval = setInterval(function() {
+    timeElapsed += 1;
+    timeElaspedLoading.innerHTML = `Time Elasped: ${timeElapsed}s`;
+  }, 1000);
+  socket.emit('serverWaiting');
 }
 function attemptLogin() {
   let username = usernameInput.value;
@@ -290,7 +333,28 @@ function Connect() {
   socket.emit("join", chatIDInput.value, usernameInput.value);
 }
 function Send() {
-  if (delay && messageInput.value.replace(/\s/g, "") != ""){
+  if (delay && messageInput.value.replace(/\s/g, "") != "") {
+    if (messageInput.value.includes("|")) {
+      alert('Sorry, you cannot use the "|" character, as it is reserved for the server.');
+    }
+    else if (messageInput.value.includes('@') == true && messageInput.value.includes(':') == true) {
+      let messageSplit = messageInput.value.split(':');
+      let messageSplit2 = messageSplit[0].split('@');
+      let replyTo = messageSplit2[1];
+      sendBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+      socket.emit('checkForUserExistance', replyTo);
+      }
+    else {
+      delay = false;
+      setTimeout(delayReset, 1000);
+      socket.emit("send", messageInput.value);
+      messageInput.value = "";
+      checkTyping(messageInput.value);
+    }
+  }
+}
+function sendValidUserReply() {
+  if (delay && messageInput.value.replace(/\s/g, "") != "") {
     if (messageInput.value.includes("|")) {
       alert('Sorry, you cannot use the "|" character, as it is reserved for the server.');
     }
@@ -366,6 +430,9 @@ function checkConnection() {
 }
 function attemptReconnect() {
   socket.connect();
+}
+function help() {
+  alert('HELP\nReplying: Click on the username of the person you want to reply to, than type your message\nMENTION: type "@", followed by the username of the person you want to mention, then type ":" (The ":" will be removed automatically once you send the message)');
 }
 function createActionMessage(type = 'error', data = 'TEST', autoRemove = false) {
   let container = document.getElementById('alertContainer');
@@ -679,7 +746,7 @@ document.addEventListener('keypress', function(event) {
 });
 document.addEventListener('readystatechange', function() {
   if (document.readyState == "complete") {
-    registerWorker();
+    //registerWorker();
     if (debugMode == true) {
       createActionMessage('info', 'Debug Mode Enabled', true);
     }

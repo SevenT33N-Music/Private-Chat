@@ -23,6 +23,12 @@ html, body {
   justify-content: center;
   align-items: center;
 }
+*:not(hover):not(input):not(.fa-solid) {
+  cursor: default;
+}
+.fa-solid:hover {
+  cursor: pointer;
+}
 
 /* =======
 LOGIN PAGE
@@ -134,9 +140,9 @@ MESSAGE / MAIN PAGE
   height: fit-content;
   max-height: 95%;
   min-height: 75%;
-  max-width: 25%;
-  min-width: 15%;
-  margin: 0 5%;
+  max-width: 20%;
+  min-width: 10%;
+  margin: 0 2%;
   padding: 0 5px;
   background: #22003d;
   display: flex;
@@ -225,6 +231,7 @@ MESSAGE / MAIN PAGE
   align-items: center;
 }
 .message {
+  transition: all 0s ease, padding 0.5s ease;
   width: 100%;
   height: fit-content;
   padding: 5px;
@@ -235,6 +242,11 @@ MESSAGE / MAIN PAGE
   margin: 0;
   text-overflow: ellipsis;
   overflow-wrap: break-word;
+}
+.message:hover {
+  padding: 10px;
+  padding-left: 2%;
+  padding-right: 5%;
 }
 .message.sent {
   background-color: #121212;
@@ -265,8 +277,19 @@ MESSAGE / MAIN PAGE
   border: 2px solid white;
 }
 .senderName {
-  width: 75%;
+  transition: all 0s ease, background 0.2s ease;
+  width: fit-content;
+  padding: 0;
+  padding-left: 5px;
+  padding-right: 2%;
+  margin: 0;
+  margin-left: -5px;
   height: 25px;
+  cursor: pointer;
+}
+.senderName:hover {
+  cursor: pointer;
+  background: rgba(0,0,0,0.1);
 }
 .messageTxt {
   font-size: 16px;
@@ -307,6 +330,9 @@ MESSAGE / MAIN PAGE
 .message-send-btn:hover {
   cursor: pointer;
   box-shadow: 0 0 5px 1px rgb(255, 255, 255, 0.3);
+}
+.reply-text {
+  color: #a8f5ff;
 }
 
 /* ============
@@ -535,12 +561,18 @@ MODAL ITEM
 .icon-button:hover, .icon-button:focus {
   background-color: #dfdad7;
 }
+
+/* ==========
+MEDIA QUERIES
+========== */
 @media (max-width: 400px) {
-  .noti-btn-page-container .button {
-    margin: 0;
-    font-size: 2.5vw;
-    padding: 4px 8px;
-    border-radius: 4px;
+  .message-input:focus {
+    width: 55%;
+  }
+  .topnav-btn {
+    max-width: 20%;
+    min-width: 5%;
+    margin: 0 1%;
   }
 }
 @media (max-width: 600px) {
@@ -557,6 +589,16 @@ MODAL ITEM
     font-size: 2.5vw;
     padding: 8px 16px;
     border-radius: 4px;
+  }
+  .top-nav-container {
+    justify-content: space-evenly;
+  }
+  .topnav-btn {
+    max-width: 25%;
+    min-width: 15%;
+  }
+  .message-input:focus {
+    width: 65%;
   }
 }
 @media (max-width: 1000px) {

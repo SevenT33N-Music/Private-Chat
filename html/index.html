@@ -1,23 +1,27 @@
  <!DOCTYPE HTML>
 <html>
   <head>
-    <title> Private Chat App (Coded By Tyler) </title>
-    <meta name = "charset" charset = "utf-8">
+    <title> Private Chat App </title>
+    <meta name="charset" charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <link rel = "stylesheet" type = "text/css" href = "style.css">
+    <link rel="stylesheet" type="text/css" href="style.css">
     <link rel="manifest" href="manifest.json" id="manifestItem"/>
-    <script src= "socket.io/socket.io.js"></script>
+    <link rel="icon" type="image/x-icon" href="appLogo.png"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="socket.io/socket.io.js"></script>
   </head>
   <body>
     <section class="action-alert-container" id="alertContainer"></section>
     <section class='container' id="loadingContainer">
-      Loading...
+      <p id="loadingInfo">Loading Content...</p>
+      <p id="timeElaspedLoading" style="display: none;"></p>
     </section>
     <section id="mainContainer" class="container" style="display: none;">
       <div class="top-nav-container">
-        <div class="topnav-btn" onclick="getOnlineUsers()" id="onlineUsersBtn">Online Users</div>
-        <div class="topnav-btn" onclick="window.location.reload()">Refresh Page</div>
-        <div class="topnav-btn" onclick="logout()">Logout</div>
+        <div class="topnav-btn" onclick="help()" id="helpBtn"><i class="fa-solid fa-question"></i></div>
+        <div class="topnav-btn" onclick="getOnlineUsers()" id="onlineUsersBtn"><i class="fa-solid fa-users-viewfinder"></i></div>
+        <div class="topnav-btn" onclick="window.location.reload()"><i class="fa-solid fa-rotate"></i></div>
+        <div class="topnav-btn" onclick="logout()"><i class="fa-solid fa-right-from-bracket fa-flip-horizontal"></i></div>
         <!--<div class="topnav-btn" onclick="checkConnection()" id="checkConnectionBtn">Check Connection</div>-->
       </div>
       <div class="messsage-container" id="messageContainer"></div>
@@ -30,7 +34,7 @@
         </div>
         <div class="message-input-container">
           <input placeholder="Message" id="messageInput" class="message-input" name="messageInput" onchange="checkTyping(this.value)" oninput="checkTyping(this.value)" autocomplete="off" autocapitalize="false" enterkeyhint="send">
-          <div class="message-send-btn" id="sendBtn" onclick="Send()">Send</div>
+          <div class="message-send-btn" id="sendBtn" onclick="Send()"><i class="fa-solid fa-paper-plane"></i></div>
         </div>
       </div>
     </section>

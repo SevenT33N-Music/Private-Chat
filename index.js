@@ -18,6 +18,7 @@ const tylerPass = process.env['tyler_password'];
 const tylerAltPass = process.env['tylerAlt_password'];
 var rooms = [];
 var usernames = [];
+var userNamesLowercase = ['kaylaisgreat', 'tylerthegoat', 'tyler_on_alt_account'];
 var userNames = ['KaylaIsGreat', 'TylerTheGoat', 'Tyler_On_Alt_Account'];
 var passwords = [kaylaPass, tylerPass, tylerAltPass];
 var preferredNames = [];
@@ -91,10 +92,11 @@ io.on('connection', function(socket) {
   })
   socket.on('attemptLogin', function(username, password) {
     console.log('Attempted login with username "' + username + '"');
-    if (userNames.includes(username)) {
-      let index = userNames.indexOf(username);
+    let attemptedUsername = username.toLowerCase();
+    if (userNamesLowercase.includes(attemptedUsername)) {
+      let index = userNamesLowercase.indexOf(attemptedUsername);
       if (index != -1 && passwords[index] == password) {
-        socket.emit('loginSuccess');
+        socket.emit('loginSuccess', userNames[index]);
       }
       else {
         socket.emit('loginFail');
@@ -128,5 +130,17 @@ io.on('connection', function(socket) {
       socket.emit('error', 'Failed to Fetch Online Users.');
       throw err;
     }
+  })
+  socket.on('checkForUserExistance', function(username) {
+    let lowerCaseUser = username.toLowerCase();
+    if (userNamesLowercase.includes(lowerCaseUser)) {
+      socket.emit('userExists');
+    }
+    else {
+      socket.emit('userDoesntExist');
+    }
+  })
+  socket.on('serverWaiting', function() {
+    socket.emit('serverUp');
   })
 })
